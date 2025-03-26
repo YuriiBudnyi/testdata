@@ -41,4 +41,4 @@ jobs:
               ]
             }
         env:
-          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+          SLACK_BOT_TOKEN: "https://hooks.slack.com/services/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"
