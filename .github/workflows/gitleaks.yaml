@@ -13,8 +13,6 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
 
       - name: Run GitLeaks
         id: gitleaks
@@ -24,7 +22,7 @@ jobs:
           GITLEAKS_NOTIFY_USER_LIST: ${{ github.actor }}
 
       - name: Send GitHub Actions Report to Slack
-        if: steps.gitleaks.outputs.leaks_found == 'true'
+        if: steps.gitleaks.outcome == 'failure'
         id: slack
         uses: slackapi/slack-github-action@v1.25.0
         with:
