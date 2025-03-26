@@ -22,7 +22,7 @@ jobs:
           GITLEAKS_NOTIFY_USER_LIST: ${{ github.actor }}
 
       - name: Send GitHub Actions Report to Slack
-        if: steps.gitleaks.outcome == 'failure'
+        if: failure()
         id: slack
         uses: slackapi/slack-github-action@v1.25.0
         with:
