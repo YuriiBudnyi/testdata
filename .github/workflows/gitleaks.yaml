@@ -39,5 +39,5 @@ jobs:
                 }
               ]
             }
-          webhook: https://hooks.slack.com/services/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
+          webhook: https://hooks.slack.com/services/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
           webhook-type: incoming-webhook
