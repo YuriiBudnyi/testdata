@@ -11,10 +11,36 @@ jobs:
   gitleaks:
     runs-on: ubuntu-latest
     steps:
-        - uses: actions/checkout@v4
-          with:
-            fetch-depth: 0
-        - uses: gitleaks/gitleaks-action@v2
-          env:
-            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-            GITLEAKS_NOTIFY_USER_LIST: ${{ github.actor }}
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Run GitLeaks
+        id: gitleaks
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITLEAKS_NOTIFY_USER_LIST: ${{ github.actor }}
+
+      - name: Send GitHub Actions Report to Slack
+        if: steps.gitleaks.outputs.leaks_found == 'true'
+        id: slack
+        uses: slackapi/slack-github-action@v1.25.0
+        with:
+          channel-id: 'C5UP17XLG'
+          payload: |
+            {
+              "text": "GitLeaks scan detected leaks in repository `${{ github.repository }}` triggered by `${{ github.actor }}`.",
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "*GitLeaks Alert:*\nLeaks were detected in repository `${{ github.repository }}`\nTriggered by: `${{ github.actor }}`"
+                  }
+                }
+              ]
+            }
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
