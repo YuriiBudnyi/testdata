@@ -16,6 +16,7 @@ jobs:
 
       - name: Install GitLeaks
         run: |
+          uname -m
           curl -sSL https://github.com/gitleaks/gitleaks/releases/download/v8.24.2/gitleaks_8.24.2_darwin_x64.tar.gz -o gitleaks.tar.gz
           tar -xzf gitleaks.tar.gz
           chmod + gitleaks
