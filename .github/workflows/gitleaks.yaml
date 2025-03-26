@@ -11,37 +11,9 @@ jobs:
   gitleaks:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v2
-
-      - name: Install GitLeaks
-        run: |
-          curl -sSL https://github.com/zricethezav/gitleaks/releases/download/v8.2.10/gitleaks_8.2.10_linux_x64.tar.gz -o gitleaks.tar.gz
-          echo "download"
-          ls -la
-          tar -xzf gitleaks.tar.gz
-          echo "tar"
-          sudo mv gitleaks /usr/local/bin/
-
-      - name: Run GitLeaks
-        id: gitleaks
-        run: |
-          # Running GitLeaks; exit code will be non-zero if leaks are detected.
-          gitleaks detect --source . --report-format json --report-path gitleaks-report.json || true
-
-      - name: Check for Leaks
-        id: check_leaks
-        run: |
-          if grep -q "Description" gitleaks-report.json; then
-            echo "::set-output name=leaks_found::true"
-          else
-            echo "::set-output name=leaks_found::false"
-          fi
-
-      - name: Send Slack Notification
-        if: steps.check_leaks.outputs.leaks_found == 'true'
-        run: |
-          message="*GitLeaks Alert in ${{ github.repository }}*%0APotential secrets were detected during the scan.%0A<https://github.com/${{ github.repository }}/actions|View Workflow Details>"
-          curl -X POST -H 'Content-type: application/json' \
-            --data "{\"text\": \"$message\"}" \
-            ${{ secrets.SLACK_WEBHOOK_URL }}
+        - uses: actions/checkout@v4
+          with:
+            fetch-depth: 0
+        - uses: gitleaks/gitleaks-action@v2
+          env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
