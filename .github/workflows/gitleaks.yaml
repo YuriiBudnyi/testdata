@@ -14,12 +14,16 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
+      - name: Install GitLeaks
+        run: |
+          curl -sSL https://github.com/gitleaks/gitleaks/releases/download/v8.24.2/gitleaks_8.24.2_darwin_x64.tar.gz -o gitleaks.tar.gz
+          tar -xzf gitleaks.tar.gz
+
       - name: Run GitLeaks
         id: gitleaks
-        uses: gitleaks/gitleaks-action@v2
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GITLEAKS_NOTIFY_USER_LIST: ${{ github.actor }}
+        run: |
+          # Running GitLeaks; the command exits non-zero if leaks are detected.
+          ./gitleaks detect --source .
 
       - name: Send GitHub Actions Report to Slack
         if: failure()
