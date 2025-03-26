@@ -24,9 +24,8 @@ jobs:
       - name: Send GitHub Actions Report to Slack
         if: failure()
         id: slack
-        uses: slackapi/slack-github-action@v1.25.0
+        uses: slackapi/slack-github-action@v2.0.0
         with:
-          channel-id: 'C5UP17XLG'
           payload: |
             {
               "text": "GitLeaks scan detected leaks in repository `${{ github.repository }}` triggered by `${{ github.actor }}`.",
@@ -40,5 +39,4 @@ jobs:
                 }
               ]
             }
-        env:
-          SLACK_BOT_TOKEN: "https://hooks.slack.com/services/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"
+          webhook: "https://hooks.slack.com/services/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"
