@@ -26,7 +26,7 @@ jobs:
         continue-on-error: true
         run: |
           # The --all-commits flag instructs GitLeaks to scan all commits.
-          ./gitleaks detect --source . --all-commits --verbose
+          ./gitleaks detect --source . --log-opts="--all" --verbose
 
       - name: Send GitHub Actions Report to Slack
         if: failure()  # Runs only if the previous GitLeaks step failed (i.e. leaks were detected)
