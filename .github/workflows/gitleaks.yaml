@@ -40,3 +40,4 @@ jobs:
               ]
             }
           webhook: "https://hooks.slack.com/services/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"
+          webhook-type: incoming-webhook
