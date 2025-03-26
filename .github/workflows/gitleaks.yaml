@@ -29,7 +29,7 @@ jobs:
           ./gitleaks detect --source . --log-opts="--all" --verbose
 
       - name: Send GitHub Actions Report to Slack
-        if: failure()
+        if: steps.gitleaks.outcome == 'failure'
         id: slack
         uses: slackapi/slack-github-action@v2.0.0
         with:
