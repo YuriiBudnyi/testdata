@@ -13,17 +13,38 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Install GitLeaks
         run: |
-          uname -m
           curl -sSL https://github.com/gitleaks/gitleaks/releases/download/v8.24.2/gitleaks_8.24.2_linux_x64.tar.gz -o gitleaks.tar.gz
           tar -xzf gitleaks.tar.gz
 
       - name: Run GitLeaks
         id: gitleaks
+        continue-on-error: true
         run: |
-          # Running GitLeaks; the command exits non-zero if leaks are detected.
-          ./gitleaks detect --source .
+          # The --all-commits flag instructs GitLeaks to scan all commits.
+          ./gitleaks detect --source . --all-commits --verbose
 
-
+      - name: Send GitHub Actions Report to Slack
+        if: failure()  # Runs only if the previous GitLeaks step failed (i.e. leaks were detected)
+        id: slack
+        uses: slackapi/slack-github-action@v2.0.0
+        with:
+          webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
+          webhook-type: incoming-webhook
+          payload: |
+            {
+              "text": "*GitLeaks scan detected leaks*\nRepository <${{ github.server_url }}/${{ github.repository }}|${{ github.repository }}> triggered by ${{ github.actor }}.",
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "*GitLeaks Alert:*\nLeaks were detected in repository <${{ github.server_url }}/${{ github.repository }}|${{ github.repository }}>\nTriggered by: ${{ github.actor }}."
+                  }
+                }
+              ]
+            }
